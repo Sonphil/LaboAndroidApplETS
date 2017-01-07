@@ -1,4 +1,4 @@
-package com.phil.laboandroidapplets.data;
+package com.phil.laboandroidapplets;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,18 +13,20 @@ public class ClubsDBHelper extends SQLiteOpenHelper {
     private static final  int DATABASE_VERSION = 1;
 
     public ClubsDBHelper(Context context) {
+
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         final String SQL_CREATE_CLUBS_TABLE = "CREATE TABLE "
-                + ClubsContract.TABLE_NAME + " ("
+                + Club.ClubContract.TABLE_NAME + " ("
                 // ID provenant de BaseColumns
-                + ClubsContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + ClubsContract.COLUMN_NOM + " TEXT NOT NULL,"
-                + ClubsContract.COLUMN_LOCAL + " TEXT NOT NULL,"
-                + ClubsContract.COLUMN_ICONE + " TEXT NOT NULL,"
-                + ClubsContract.COLUMN_SITEWEB + " TEXT NOT NULL"
+                + Club.ClubContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Club.ClubContract.COLUMN_NOM + " TEXT NOT NULL,"
+                + Club.ClubContract.COLUMN_LOCAL + " TEXT NOT NULL,"
+                + Club.ClubContract.COLUMN_ICONE + " TEXT NOT NULL,"
+                + Club.ClubContract.COLUMN_SITEWEB + " TEXT NOT NULL"
                 + ");";
 
         db.execSQL(SQL_CREATE_CLUBS_TABLE);
@@ -32,7 +34,7 @@ public class ClubsDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + ClubsContract.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Club.ClubContract.TABLE_NAME);
         onCreate(db);
     }
 }
