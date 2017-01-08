@@ -4,11 +4,20 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,7 +41,8 @@ public class ClubsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private ListView mListViewClubs;
-    private ClubsDBAdapter clubsDBAdapter;
+    private ClubsORMDBHelper clubsORMDBHelper;
+    private Dao<Club, Integer> dao;
 
     public ClubsFragment() {
         // Required empty public constructor
@@ -65,30 +75,56 @@ public class ClubsFragment extends Fragment {
         }
     }
 
+    private void setUpDBHelperAndDao() {
+        if (clubsORMDBHelper == null) {
+            clubsORMDBHelper = OpenHelperManager.getHelper(getActivity(), ClubsORMDBHelper.class);
+        }
+        try {
+            dao = clubsORMDBHelper.getDao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (clubsORMDBHelper != null) {
+            OpenHelperManager.releaseHelper();
+            clubsORMDBHelper = null;
+        }
+    }
+
     private void setUpClubsList(View view) {
         mListViewClubs = (ListView) view.findViewById(R.id.liste_clubs);
         Context context = getActivity();
-        clubsDBAdapter = new ClubsDBAdapter(context);
-        if (clubsDBAdapter.getCount() == 0) {
-            // Seed
-            clubsDBAdapter.insertClub(new Club("ApplETS", "A-1304", "ic_applets", "https://clubapplets.ca/"));
-            clubsDBAdapter.insertClub(new Club("Baja ÉTS", " A-1332", "ic_baja", "http://baja.etsmtl.ca/"));
-            clubsDBAdapter.insertClub(new Club("Conjure", "A-1744", "ic_conjure", "http://conjure.etsmtl.ca/"));
-            clubsDBAdapter.insertClub(new Club("Dronolab", "A-1760", "ic_dronolab", "http://dronolab.com/"));
-            clubsDBAdapter.insertClub(new Club("Formule ETS", "A-1330", "ic_formuleets", "http://formuleets.ca/"));
-            clubsDBAdapter.insertClub(new Club("LAN ETS", "B-0506", "ic_lanets", "https://lanets.ca/"));
-            clubsDBAdapter.insertClub(new Club("Reflets", "B-3412", "ic_reflets", "http://clubreflets.com/"));
-            clubsDBAdapter.insertClub(new Club("RockÉTS", "A-1764", "ic_rockets", "http://www.clubrockets.ca/"));
-            clubsDBAdapter.insertClub(new Club("S.O.N.I.A.", "A-XXXX", "ic_sonia", "http://sonia.etsmtl.ca/?lang=fr"));
+        try {
+            if (dao.countOf() == 0) {
+                // Seed
+                dao.createOrUpdate(new Club("ApplETS", "A-1304", "ic_applets", "https://clubapplets.ca/"));
+                dao.createOrUpdate(new Club("Baja ÉTS", " A-1332", "ic_baja", "http://baja.etsmtl.ca/"));
+                dao.createOrUpdate(new Club("Conjure", "A-1744", "ic_conjure", "http://conjure.etsmtl.ca/"));
+                dao.createOrUpdate(new Club("Dronolab", "A-1760", "ic_dronolab", "http://dronolab.com/"));
+                dao.createOrUpdate(new Club("Formule ETS", "A-1330", "ic_formuleets", "http://formuleets.ca/"));
+                dao.createOrUpdate(new Club("LAN ETS", "B-0506", "ic_lanets", "https://lanets.ca/"));
+                dao.createOrUpdate(new Club("Reflets", "B-3412", "ic_reflets", "http://clubreflets.com/"));
+                dao.createOrUpdate(new Club("RockÉTS", "A-1764", "ic_rockets", "http://www.clubrockets.ca/"));
+                dao.createOrUpdate(new Club("S.O.N.I.A.", "A-XXXX", "ic_sonia", "http://sonia.etsmtl.ca/?lang=fr"));
+            }
+            List<Club> clubs = dao.queryForAll();
+            ArrayAdapter adapter = new ClubsAdapter(this, clubs);
+            mListViewClubs.setAdapter(adapter);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        ArrayAdapter adapter = new ClubsAdapter(this, clubsDBAdapter.getAllClubsAsList());
-        mListViewClubs.setAdapter(adapter);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_clubs, container, false);
+        setUpDBHelperAndDao();
         setUpClubsList(view);
         return view;
     }
