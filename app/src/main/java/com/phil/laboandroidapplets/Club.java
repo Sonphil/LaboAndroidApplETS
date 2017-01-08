@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 /**
  * Created by TSPhi on 2017-01-06.
  */
-public class Club implements BaseColumns{
+public class Club {
 
     private String nom;
     private String local;
