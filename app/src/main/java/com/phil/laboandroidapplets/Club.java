@@ -3,6 +3,7 @@ package com.phil.laboandroidapplets;
 import android.provider.BaseColumns;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * Created by TSPhi on 2017-01-06.

@@ -3,14 +3,12 @@ package com.phil.laboandroidapplets;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -21,6 +19,7 @@ import java.util.List;
 public class ClubsAdapter extends ArrayAdapter<Club> {
 
     private ClubsFragment mFragment;
+    private ViewHolderItem viewHolderItem;
 
     public ClubsAdapter(ClubsFragment fragment, List<Club> clubs) {
         super(fragment.getActivity(), 0, clubs);
@@ -33,23 +32,32 @@ public class ClubsAdapter extends ArrayAdapter<Club> {
         final Club club = getItem(position);
         final Context context = getContext();
 
-        // On vérifie si une vue existante a été réutilisée. Autrement, on la génère.
+        /*
+        La méthode getView essaie d'obtenir une vue (convertView) recyclée. Cependant, si celle-ci
+        est nulle, cela signifie qu'aucune vue recyclée est disponible. Il faut donc générer une
+        nouvelle. En d'autres mots, on vérifie si une vue existante a été réutilisée  Autrement, on
+        en génère une nouvelle.
+         */
         if (convertView == null) {
             convertView = LayoutInflater.from(context).
                     inflate(R.layout.list_clubs_item, parent, false);
         }
 
-        TextView textViewNomClub = (TextView) convertView.findViewById(R.id.nomClub);
-        textViewNomClub.setText(club.getNom());
+        viewHolderItem = (ViewHolderItem) convertView.getTag();
+        if (viewHolderItem == null) {
+            viewHolderItem = new ViewHolderItem();
+            viewHolderItem.textViewNomClub = (TextView) convertView.findViewById(R.id.nomClub);
+            viewHolderItem.textViewLocalClub = (TextView) convertView.findViewById(R.id.localClub);
+            viewHolderItem.imageViewIconClub = (ImageView) convertView.findViewById(R.id.iconeClub);
+        }
 
-        TextView textViewLocalClub = (TextView) convertView.findViewById(R.id.localClub);
-        textViewLocalClub.setText(club.getLocal());
+        viewHolderItem.textViewNomClub.setText(club.getNom());
 
-        ImageView imageViewIconClub = (ImageView) convertView.findViewById(R.id.iconeClub);
+        viewHolderItem.textViewLocalClub.setText(club.getLocal());
 
         int idDrawable = context.getResources().getIdentifier(club.getIcone(), "drawable",
                 context.getPackageName());
-        imageViewIconClub.setImageResource(idDrawable);
+        viewHolderItem.imageViewIconClub.setImageResource(idDrawable);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,5 +67,16 @@ public class ClubsAdapter extends ArrayAdapter<Club> {
         });
 
         return convertView;
+    }
+
+    /**
+     * Classe servant à retenir les références vers les sous-vues de la vue (item) de la liste et
+     * éviter d'avoir à les rechercher de nouveau. Un ViewHolder est donc, associé à chaque vue de
+     * la liste et il stocké en tant que propriété de cette vue dans l'attribut tag.
+     */
+    private class ViewHolderItem {
+        public TextView textViewNomClub;
+        public TextView textViewLocalClub;
+        public ImageView imageViewIconClub;
     }
 }
