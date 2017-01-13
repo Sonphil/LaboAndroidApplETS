@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
@@ -97,7 +96,6 @@ public class ClubsFragment extends Fragment {
 
     private void setUpClubsList(View view) {
         mListViewClubs = (ListView) view.findViewById(R.id.liste_clubs);
-        Context context = getActivity();
         try {
             if (dao.countOf() == 0) {
                 // Seed

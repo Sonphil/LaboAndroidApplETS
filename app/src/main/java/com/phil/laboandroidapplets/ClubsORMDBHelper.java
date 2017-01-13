@@ -42,7 +42,7 @@ public class ClubsORMDBHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable(connectionSource, Club.class);
+            TableUtils.createTableIfNotExists(connectionSource, Club.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
