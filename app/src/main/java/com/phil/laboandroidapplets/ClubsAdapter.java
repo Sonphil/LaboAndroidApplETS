@@ -49,6 +49,7 @@ public class ClubsAdapter extends ArrayAdapter<Club> {
             viewHolderItem.textViewNomClub = (TextView) convertView.findViewById(R.id.nomClub);
             viewHolderItem.textViewLocalClub = (TextView) convertView.findViewById(R.id.localClub);
             viewHolderItem.imageViewIconClub = (ImageView) convertView.findViewById(R.id.iconeClub);
+            convertView.setTag(viewHolderItem);
         }
 
         viewHolderItem.textViewNomClub.setText(club.getNom());
